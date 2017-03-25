@@ -1,0 +1,28 @@
+#!/bin/bash
+
+BACKLIGHT_LOCATION="/sys/class/backlight"
+SOURCE="intel_backlight"
+DESTINATION="acpi_video0"
+CURRENT_BRIGHTNESS_FILE="$BACKLIGHT_LOCATION/$SOURCE/brightness"
+
+function get_source_brightness() {
+	local backlight_location="$BACKLIGHT_LOCATION/$SOURCE"
+	local max_brightness="$(cat $backlight_location/max_brightness)"
+	local current_brightness="$(cat $CURRENT_BRIGHTNESS_FILE)"
+	local brightness_percentage=$(echo "scale=2;$current_brightness/$max_brightness"|bc)
+	echo "$brightness_percentage"
+}
+
+function set_destination_brightness() {
+	local source_brightness="$1"
+	local backlight_location="$BACKLIGHT_LOCATION/$DESTINATION"
+	local max_brightness="$(cat $backlight_location/max_brightness)"
+	local current_brightness="$backlight_location/brightness"
+	local destination_brightness=$(echo "scale=0;($max_brightness*$source_brightness)/1"|bc)
+	echo "$destination_brightness" > "$current_brightness"
+}
+
+while (inotifywait -qq -e close_write $CURRENT_BRIGHTNESS_FILE); do
+	src_value=$(get_source_brightness)
+	set_destination_brightness $src_value
+done;
