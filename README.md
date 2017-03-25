@@ -1,4 +1,4 @@
-#backlight-copy
+# backlight-copy
 
 This script will copy brightness settings from source device to destination device.
  
@@ -11,7 +11,7 @@ manager. To make this work I decided to write simple bash script which will moni
 intel_backlight (acpi_video1) and copy current brightness level to destination decided. So it will
 copy brightness level from intel card to amd card.
 
-#How to install
+# How to install
 
 ## requirements
 ionotify binary must be installed:
